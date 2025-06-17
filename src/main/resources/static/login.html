@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui-layer/dist/theme/default/layer.css" />
+</head>
+<body>
+  <h1>it is login page</h1>
+    <form action="/login" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br><br>
+        <input type="submit" value="Login">
+        <button type="button" id="register_btn">Register</button>
+    </form>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/gridjs/dist/gridjs.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/layui-layer/dist/layer.js"></script>
+<script>
+    function registerPanel() {
+        layer.open({
+            type: 1, // 页面层
+            title: '登录', // 弹窗标题
+            area: ['400px', '300px'], // 宽高
+            content: `
+                <div style="padding: 20px;">
+                    <label>用户名：</label>
+                    <input type="text" id="newusername" value="" style="width: 100%; margin-bottom: 10px;" />
+                    <label>密码：</label>
+                    <input type="password" value="" id="newpassword" style="width: 100%;" />
+                </div>
+            `,
+            btn: ['确定', '取消'], // 按钮
+            yes: function(index) {
+                const username = document.getElementById('newusername').value;
+                const password = document.getElementById('newpassword').value;
+                if (!username || !password) {
+                    layer.msg('请输入用户名和密码');
+                    return;
+                }
+                console.log('用户名:', username, '密码:', password);
+                //此处更改密码和用户名，必须传入本来的用户名
+                $.ajax({
+                    url: '/addUser',
+                    type: 'post',
+                    data: {
+                        newUsername: username,
+                        newPassword: password
+                    },
+                    success: function(data) {
+                        layer.msg('注册成功');
+                        layer.close(index); // 关闭弹窗
+                        layer.confirm('注册成功，是否直接登录？', {
+                            icon: 1,
+                            title: '提示',
+                            btn: ['是', '否'] // 按钮
+                        }, function() {
+                            // 用户选择“是”
+                            //还需要在此处吧seesion 清除掉
+                            const form = document.createElement('form');
+                            form.method = 'post';
+                            form.action = '/login';
+
+                            const usernameInput = document.createElement('input');
+                            usernameInput.type = 'hidden';
+                            usernameInput.name = 'username';
+                            usernameInput.value = username;
+
+                            const passwordInput = document.createElement('input');
+                            passwordInput.type = 'hidden';
+                            passwordInput.name = 'password';
+                            passwordInput.value = password;
+
+                            form.appendChild(usernameInput);
+                            form.appendChild(passwordInput);
+
+                            document.body.appendChild(form);
+                            form.submit();
+                        }, function() {
+                            // 用户选择“否”
+                            // 在此处添加session的逻辑
+                            // location.reload();
+
+                            layer.msg('已取消重新登录');
+                        });
+
+
+                        console.log(data.status);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error logging out:', error);
+                    }
+                });
+
+
+
+
+            },
+            btn2: function() {
+                layer.msg('取消注册用户');
+            }
+        });
+    }
+    document.getElementById('register_btn').addEventListener('click', registerPanel);
+</script>
+</html>
