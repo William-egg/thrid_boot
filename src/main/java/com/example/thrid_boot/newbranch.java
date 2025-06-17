@@ -1,5 +1,6 @@
 package com.example.thrid_boot;
 // jcy TMD
+
 public class newbranch {
 
     public int id;
