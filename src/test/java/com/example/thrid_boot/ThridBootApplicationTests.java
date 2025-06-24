@@ -31,9 +31,21 @@ class ThridBootApplicationTests {
     @Test
     void testGetPassword() {
         // Assuming userService is autowired and available
-        String userName = "admin";
+        String userName = "admin11";
         String password = userService.getPassword(userName);
-        System.out.println("Password for " + userName + ": " + password);
+        System.out.println("Password for " + userName + ": " + (password == null));
     }
+    @Test
+    public void testInsertUser() {
+        // Assuming userService is autowired and available
+        String userName = "admin11";
+//        userService.insertUser();
+        try{
+            userService.insertUser(userName,"1234");
+        }catch (Exception e){
+            System.out.println("INTO ERROR");
+            System.out.println("Error inserting user: " + e.getMessage());
+        }
 
+    }
 }
